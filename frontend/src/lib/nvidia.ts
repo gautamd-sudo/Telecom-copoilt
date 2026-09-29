@@ -7,6 +7,8 @@ export const NVIDIA_MODEL = process.env.NVIDIA_MODEL || 'deepseek-ai/deepseek-v4
 export const nvidiaClient = new OpenAI({
   apiKey: NVIDIA_API_KEY,
   baseURL: NVIDIA_BASE_URL,
+  timeout: 45000,
+  maxRetries: 2,
 });
 
 export async function askDeepSeek(
@@ -39,6 +41,7 @@ export async function askDeepSeek(
     model: NVIDIA_MODEL,
     messages,
     temperature: options?.temperature ?? 0.2,
+    max_tokens: 1024,
   });
 
   return completion.choices[0]?.message?.content || '';
