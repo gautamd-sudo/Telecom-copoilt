@@ -13,7 +13,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/preset-env": "^8.0.6",
     "@prisma/client": "^5.19.1",
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
@@ -25,7 +24,6 @@
     "@types/swagger-ui-express": "^4.1.8",
     "@types/uuid": "^11.0.0",
     "@types/yamljs": "^0.2.34",
-    "babel-jest": "^30.5.2",
     "jest": "^30.5.2",
     "pg": "^8.23.0",
     "prisma": "^5.19.1",
