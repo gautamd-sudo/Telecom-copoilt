@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #070B14;
+  --foreground: #F8FAFC;
+  --card: #111A2E;
+  --card-border: #22375F;
+  --accent-cyan: #00F0FF;
+  --accent-emerald: #10B981;
+  --accent-purple: #A855F7;
+  --accent-amber: #F59E0B;
+  --accent-rose: #F43F5E;
+}
+
+body {
+  color: #F8FAFC;
+  background-color: #070B14;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.10) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar for Stitch command center */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090E1B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #253961;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3B5B96;
+}
+
+@layer components {
+  /* High-Contrast Stitch Card Design */
+  .stitch-card {
+    background: #111A2E;
+    border: 1px solid #24385E;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+    border-radius: 0.875rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .stitch-card:hover {
+    border-color: #38BDF8;
+    box-shadow: 0 8px 30px -4px rgba(0, 240, 255, 0.15), 0 0 0 1px rgba(56, 189, 248, 0.1) inset;
+  }
+
+  /* Specific High-Visibility Card Variants */
+  .stitch-card-healthy {
+    background: linear-gradient(180deg, #0C212B 0%, #0A1823 100%);
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.12);
+  }
+
+  .stitch-card-healthy:hover {
+    border-color: #10B981;
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.22);
+  }
+
+  .stitch-card-warning {
+    background: linear-gradient(180deg, #2A1D0E 0%, #191209 100%);
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    box-shadow: 0 4px 20px -2px rgba(245, 158, 11, 0.12);
+  }
+
+  .stitch-card-warning:hover {
+    border-color: #F59E0B;
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.22);
+  }
+
+  .stitch-card-critical {
+    background: linear-gradient(180deg, #2D101A 0%, #1C0A10 100%);
+    border: 1px solid rgba(244, 63, 94, 0.50);
+    box-shadow: 0 4px 20px -2px rgba(244, 63, 94, 0.18);
+  }
+
+  .stitch-card-critical:hover {
+    border-color: #F43F5E;
+    box-shadow: 0 8px 25px rgba(244, 63, 94, 0.30);
+  }
+
+  /* Glowing borders & accents */
+  .stitch-glow-cyan {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.35);
+  }
+
+  .stitch-glow-purple {
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.35);
+  }
+
+  .stitch-pill {
+    background: #192744;
+    border: 1px solid #324D7F;
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+}

@@ -1,0 +1,931 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  settings          TenantSettings?
+  users             User[]
+  roles             Role[]
+  permissions       Permission[]
+  organizations     Organization[]
+  networks          Network[]
+  regions           Region[]
+  sites             Site[]
+  cells             Cell[]
+  equipment         Equipment[]
+  customers         Customer[]
+  subscriptions     Subscription[]
+  servicePlans      ServicePlan[]
+  devices           Device[]
+  networkMetrics    NetworkMetric[]
+  networkEvents     NetworkEvent[]
+  alarms            Alarm[]
+  incidents         Incident[]
+  incidentEvents    IncidentEvent[]
+  maintenance       MaintenanceRecord[]
+  aiAnalyses        AIAnalysis[]
+  aiRecommendations AIRecommendation[]
+  predictions       Prediction[]
+  alerts            Alert[]
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+  integrations      Integration[]
+  apiKeys           APIKey[]
+  models            Model[]
+  modelVersions     ModelVersion[]
+  datasets          Dataset[]
+  mlJobs            MLJob[]
+  sessions          Session[]
+  ingestionEvents   IngestionEvent[]
+  deadLetterEvents  DeadLetterQueue[]
+  slas              SLA[]
+  incidentLinks     IncidentEntityLink[]
+  copilotConversations CopilotConversation[]
+  customerEvents    CustomerEvent[]
+  customerIntel     CustomerIntelligence[]
+  interactions      CustomerInteraction[]
+  billingRecords    BillingRecord[]
+  leakageCases      RevenueLeakageCase[]
+  equipmentPredictions EquipmentPrediction[]
+  notificationRules NotificationRule[]
+  alertGroupings    AlertGrouping[]
+  reportTemplates   ReportTemplate[]
+  reportExecutions  ReportExecution[]
+  apiUsageLogs      APIUsageLog[]
+}
+
+model TenantSettings {
+  id        String   @id @default(uuid())
+  tenantId  String   @unique
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  branding  Json? // Acceptable JSON: visual themes, colors, logos vary widely
+  features  Json? // Acceptable JSON: arbitrary feature flags
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id            String     @id @default(uuid())
+  tenantId      String
+  tenant        Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email         String
+  name          String
+  passwordHash  String
+  emailVerified Boolean    @default(false)
+  loginAttempts Int        @default(0)
+  lockoutUntil  DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+  roles         UserRole[]
+  sessions      Session[]
+  copilotConversations CopilotConversation[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+model Role {
+  id          String       @id @default(uuid())
+  tenantId    String
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  users       UserRole[]
+  permissions Permission[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model Permission {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  action   String
+  resource String
+  roleId   String
+  role     Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([roleId])
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
+}
+
+model Organization {
+  id        String    @id @default(uuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  networks  Network[]
+
+  @@index([tenantId])
+}
+
+model Network {
+  id             String       @id @default(uuid())
+  tenantId       String
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  type           String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+  regions        Region[]
+
+  @@index([tenantId])
+  @@index([organizationId])
+}
+
+model Region {
+  id        String    @id @default(uuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  networkId String
+  network   Network   @relation(fields: [networkId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  sites     Site[]
+
+  @@index([tenantId])
+  @@index([networkId])
+}
+
+model Site {
+  id        String      @id @default(uuid())
+  tenantId  String
+  tenant    Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  regionId  String
+  region    Region      @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  name      String
+  latitude  Float
+  longitude Float
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  deletedAt DateTime?
+  cells     Cell[]
+  equipment Equipment[]
+
+  @@index([tenantId])
+  @@index([regionId])
+}
+
+model Cell {
+  id        String    @id @default(uuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  siteId    String
+  site      Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  name      String
+  frequency String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([tenantId])
+  @@index([siteId])
+}
+
+model Equipment {
+  id           String    @id @default(uuid())
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  siteId       String
+  site         Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  type         String
+  manufacturer String
+  model        String
+  serialNumber String
+  status       String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  maintenanceRecords MaintenanceRecord[]
+  predictions        EquipmentPrediction[]
+
+  @@index([tenantId])
+  @@index([siteId])
+  @@index([status])
+}
+
+model Customer {
+  id        String    @id @default(uuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  phone     String?
+  type      String // e.g. B2B, B2C
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  subscriptions Subscription[]
+  events        CustomerEvent[]
+  intelligence  CustomerIntelligence?
+  interactions  CustomerInteraction[]
+  billingRecords BillingRecord[]
+
+  @@index([tenantId])
+}
+
+model ServicePlan {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  price       Float
+  currency    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  subscriptions Subscription[]
+
+  @@index([tenantId])
+}
+
+model Subscription {
+  id            String      @id @default(uuid())
+  tenantId      String
+  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId    String
+  customer      Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  servicePlanId String
+  servicePlan   ServicePlan @relation(fields: [servicePlanId], references: [id], onDelete: Cascade)
+  status        String
+  startDate     DateTime
+  endDate       DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+
+  devices Device[]
+
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([servicePlanId])
+}
+
+model Device {
+  id             String       @id @default(uuid())
+  tenantId       String
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  imei           String?
+  macAddress     String?
+  type           String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+
+  @@index([tenantId])
+  @@index([subscriptionId])
+}
+
+model NetworkMetric {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  timestamp  DateTime @default(now())
+  sourceId   String // ID of Cell, Equipment, etc.
+  sourceType String // 'Cell', 'Equipment'
+  metricName String
+  value      Float
+  unit       String
+
+  @@index([tenantId, timestamp(sort: Desc)])
+  @@index([tenantId, sourceId, metricName])
+}
+
+model NetworkEvent {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  timestamp   DateTime @default(now())
+  sourceId    String
+  sourceType  String
+  eventType   String
+  severity    String
+  description String
+
+  @@index([tenantId, timestamp(sort: Desc)])
+}
+
+model Alarm {
+  id         String    @id @default(uuid())
+  tenantId   String
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  timestamp  DateTime  @default(now())
+  sourceId   String
+  sourceType String
+  name       String
+  severity   String
+  status     String // 'ACTIVE', 'CLEARED'
+  clearedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([tenantId, status])
+  @@index([tenantId, timestamp(sort: Desc)])
+}
+
+model Incident {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  source      String    // 'ANOMALY', 'ALARM', 'MANUAL', 'INTEGRATION', 'AI'
+  status      String    // 'OPEN', 'ACKNOWLEDGED', 'INVESTIGATING', 'MITIGATING', 'RESOLVED', 'CLOSED'
+  severity    String    // 'CRITICAL', 'MAJOR', 'MINOR', 'INFO'
+  priority    String    // 'P1', 'P2', 'P3', 'P4'
+  assignedTo  String?   // User ID
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  acknowledgedAt DateTime?
+  resolvedAt  DateTime?
+  closedAt    DateTime?
+  deletedAt   DateTime?
+
+  events      IncidentEvent[]
+  slas        SLA[]
+  links       IncidentEntityLink[]
+  aiAnalysis  AIAnalysis?
+
+  @@index([tenantId, status])
+}
+
+model IncidentEvent {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  incidentId String
+  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  userId     String?
+  type       String   // 'COMMENT', 'STATUS_CHANGE', 'ASSIGNMENT', 'AI_ANALYSIS', 'RECOMMENDATION', 'ACTION'
+  content    String   // Stored as JSON string or text depending on needs
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, incidentId])
+}
+
+model MaintenanceRecord {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  equipmentId String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  type        String // 'PREVENTIVE', 'CORRECTIVE'
+  status      String // 'SCHEDULED', 'COMPLETED'
+  scheduledAt DateTime
+  completedAt DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([tenantId, equipmentId])
+}
+
+
+
+model Prediction {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  targetId       String
+  targetType     String
+  predictionType String // 'CHURN', 'FAILURE'
+  probability    Float
+  horizon        Int // Hours/Days
+  createdAt      DateTime @default(now())
+
+  @@index([tenantId, targetId])
+}
+
+model Alert {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  level     String
+  isRead    Boolean  @default(false)
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, userId, isRead])
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId    String
+  channel   String // 'EMAIL', 'SMS', 'WEB'
+  status    String // 'PENDING', 'SENT', 'FAILED'
+  content   String
+  createdAt DateTime  @default(now())
+  sentAt    DateTime?
+
+  @@index([tenantId, userId, status])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  details    String
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, createdAt(sort: Desc)])
+}
+
+model Integration {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  provider  String // 'AWS', 'DATADOG'
+  config    Json // External config varies heavily, JSON needed
+  status    String // 'ACTIVE', 'ERROR'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+}
+
+model APIKey {
+  id         String    @id @default(uuid())
+  tenantId   String
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name       String
+  keyHash    String    @unique
+  expiresAt  DateTime?
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  usageLogs      APIUsageLog[]
+  @@index([tenantId])
+}
+
+model Model {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  type        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  versions ModelVersion[]
+
+  @@index([tenantId])
+}
+
+model ModelVersion {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  modelId   String
+  model     Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  version   String
+  metrics   Json? // ML metrics vary by model type
+  path      String // URI to S3
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, modelId])
+}
+
+model Dataset {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  type      String
+  rowCount  Int
+  path      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+}
+
+model MLJob {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  type        String // 'TRAIN', 'INFERENCE'
+  status      String // 'RUNNING', 'COMPLETED', 'FAILED'
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  error       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([tenantId, status])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken String   @unique
+  deviceInfo   String?
+  ipAddress    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId, userId])
+}
+
+model IngestionEvent {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source          String
+  sourceEventId   String
+  receivedAt      DateTime @default(now())
+  eventTime       DateTime
+  eventType       String
+  payload         Json
+  processingStatus String  // PENDING, PROCESSED, FAILED
+
+  @@unique([tenantId, source, sourceEventId]) // Deduplication / Idempotency
+  @@index([tenantId, eventType])
+  @@index([tenantId, processingStatus])
+}
+
+model DeadLetterQueue {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source        String
+  sourceEventId String?
+  receivedAt    DateTime @default(now())
+  eventType     String?
+  payload       Json
+  errorReason   String
+  retryCount    Int      @default(0)
+
+  @@index([tenantId, source])
+}
+
+model SLA {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  incidentId     String    @unique
+  incident       Incident  @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  type           String    // 'RESPONSE', 'RESOLUTION'
+  targetTime     DateTime
+  actualTime     DateTime?
+  breached       Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+
+  @@index([tenantId, incidentId])
+}
+
+model IncidentEntityLink {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  incidentId     String
+  incident       Incident  @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  entityType     String    // 'ALARM', 'ANOMALY', 'CELL', 'CUSTOMER'
+  entityId       String
+  createdAt      DateTime  @default(now())
+
+  @@index([tenantId, incidentId])
+}
+
+
+
+model AIAnalysis {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  incidentId     String    @unique
+  incident       Incident  @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  rootCause      String
+  confidence     Float
+  evidence       Json      // Array of strings or structured evidence
+  alternativeCauses Json   // Array of strings
+  createdAt      DateTime  @default(now())
+
+  recommendations AIRecommendation[]
+
+  @@index([tenantId, incidentId])
+}
+
+model AIRecommendation {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  analysisId     String
+  analysis       AIAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  action         String
+  status         String    // 'PENDING', 'ACCEPTED', 'REJECTED'
+  feedback       String?   // Engineer's reasoning
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([tenantId, analysisId])
+}
+
+model CopilotConversation {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages CopilotMessage[]
+
+  @@index([tenantId, userId])
+}
+
+model CopilotMessage {
+  id             String   @id @default(uuid())
+  conversationId String
+  conversation   CopilotConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String   // 'user', 'assistant', 'system', 'tool'
+  content        String
+  toolCalls      Json?    // Array of tool calls made
+  citations      Json?    // Evidence/citations array
+  createdAt      DateTime @default(now())
+
+  @@index([conversationId])
+}
+
+model CustomerEvent {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId     String
+  customer       Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type           String    // 'USAGE', 'RECHARGE', 'COMPLAINT', 'SUPPORT', 'SERVICE_CHANGE', 'NETWORK_EXP'
+  description    String
+  metadata       Json?
+  createdAt      DateTime  @default(now())
+
+  @@index([tenantId, customerId])
+}
+
+model CustomerIntelligence {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId     String    @unique
+  customer       Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  sentiment      Float     // -1.0 to 1.0
+  churnRisk      Float     // 0.0 to 1.0
+  ltv            Float?    // Lifetime Value
+  npsScore       Int?
+  lastCalculated DateTime  @default(now())
+
+  @@index([tenantId, customerId])
+}
+
+model CustomerInteraction {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId     String
+  customer       Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type           String    // 'TICKET', 'CHAT', 'CALL_TRANSCRIPT', 'EMAIL', 'SURVEY'
+  content        String
+  timestamp      DateTime  @default(now())
+
+  analysis       InteractionAnalysis?
+
+  @@index([tenantId, customerId])
+}
+
+model InteractionAnalysis {
+  id             String    @id @default(uuid())
+  interactionId  String    @unique
+  interaction    CustomerInteraction @relation(fields: [interactionId], references: [id], onDelete: Cascade)
+  sentiment      String    // 'POSITIVE', 'NEUTRAL', 'NEGATIVE'
+  intent         String    // 'BILLING', 'NETWORK', 'RECHARGE', 'SIM', 'ROAMING', 'PLAN', 'CANCELLATION', 'TECHNICAL_SUPPORT', 'OTHER'
+  frustration    Float     // 0.0 to 1.0
+  urgency        Float     // 0.0 to 1.0
+  severity       String    // 'HIGH', 'MEDIUM', 'LOW'
+  confidence     Float     // 0.0 to 1.0
+  modelVersion   String
+  explanation    String
+  createdAt      DateTime  @default(now())
+}
+
+model BillingRecord {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId     String
+  customer       Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type           String    // 'USAGE', 'SUBSCRIPTION', 'ROAMING', 'DISCOUNT'
+  amount         Float
+  currency       String    @default("USD")
+  status         String    // 'BILLED', 'UNBILLED', 'FAILED'
+  timestamp      DateTime  @default(now())
+  metadata       Json?     // Used bytes, duration, origin country, etc.
+
+  @@index([tenantId, customerId])
+}
+
+model RevenueLeakageCase {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  type           String    // 'UNBILLED_USAGE', 'INCORRECT_TARIFF', 'FAILED_CHARGING', 'DUPLICATE_DISCOUNT'
+  estimatedImpact Float
+  currency       String    @default("USD")
+  evidence       Json      // Traceable array to BillingRecord IDs or calculations
+  affectedRecords Json     // Array of BillingRecord IDs
+  detectionMethod String   // 'RULE', 'STATISTICAL', 'ML'
+  confidence     Float
+  status         String    // 'OPEN', 'INVESTIGATING', 'RESOLVED', 'FALSE_POSITIVE'
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([tenantId, status])
+}
+
+model EquipmentPrediction {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  equipmentId    String
+  equipment      Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  failureProb    Float
+  degradationProb Float
+  riskLevel      String    // 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'
+  riskWindow     String    // e.g. '7_DAYS', '30_DAYS'
+  model          String
+  modelVersion   String
+  features       Json      // Features used for prediction
+  confidence     Float
+  evidence       Json      // Array of supporting evidence strings
+  recommendations Json     // Array of recommended actions
+  status         String    @default("PENDING_APPROVAL") // 'PENDING_APPROVAL', 'APPROVED', 'REJECTED'
+  createdAt      DateTime  @default(now())
+
+  @@index([tenantId, equipmentId])
+}
+
+model NotificationRule {
+  id               String    @id @default(uuid())
+  tenantId         String
+  tenant           Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name             String
+  alertType        String    // 'NETWORK_OUTAGE', 'KPI_DEGRADATION', 'ANOMALY', 'INCIDENT', 'PREDICTIVE_FAILURE', 'CHURN_SPIKE', 'REVENUE_LEAKAGE', 'AI_RECOMMENDATION'
+  severities       Json      // Array of severities e.g. ['HIGH', 'CRITICAL']
+  channels         Json      // Array: ['IN_APP', 'EMAIL', 'WEBHOOK', 'SLACK', 'MS_TEAMS', 'SMS']
+  cooldownMinutes  Int       @default(60) // Prevent alert storms
+  targetUsers      Json?     // Array of User IDs
+  targetRoles      Json?     // Array of Role IDs
+  isActive         Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+}
+
+model AlertGrouping {
+  id               String    @id @default(uuid())
+  tenantId         String
+  tenant           Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  signature        String    @unique // Hash of (tenantId + alertType + severity + entityId)
+  count            Int       @default(1)
+  firstSeen        DateTime  @default(now())
+  lastSeen         DateTime  @default(now())
+  lastNotified     DateTime? // Tracks cooldown
+  status           String    @default("ACTIVE") // 'ACTIVE', 'SUPPRESSED', 'RESOLVED'
+
+  @@index([tenantId, signature])
+}
+
+model ReportTemplate {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name           String
+  type           String    // 'NETWORK_DAILY', 'NETWORK_WEEKLY', 'INCIDENT', 'SLA', 'CHURN', 'SENTIMENT', 'REVENUE_LEAKAGE', 'PREDICTIVE_MAINTENANCE'
+  format         String    // 'PDF', 'CSV', 'EXCEL'
+  scheduleCron   String?   // If null, it's run on-demand
+  emailRecipients Json?
+  rolesAllowed   Json      // e.g. ['TENANT_ADMIN', 'DATA_ANALYST']
+  createdAt      DateTime  @default(now())
+
+  executions     ReportExecution[]
+
+  @@index([tenantId])
+}
+
+model ReportExecution {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  templateId     String
+  template       ReportTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  status         String    // 'PENDING', 'GENERATING', 'COMPLETED', 'FAILED'
+  format         String
+  artifactUrl    String?
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+  error          String?
+  requestedBy    String?   // User ID
+
+  @@index([tenantId, templateId])
+}
+
+// Global Platform Level Settings (Independent of Tenant)
+model PlatformSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model PlatformModel {
+  id        String   @id @default(uuid())
+  name      String
+  version   String
+  status    String   // 'ACTIVE', 'DEPRECATED'
+  type      String   // 'LLM', 'CLASSIFIER', 'ANOMALY_DETECTOR'
+  endpoint  String
+  createdAt DateTime @default(now())
+}
+
+model PlatformAuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  action     String
+  resource   String
+  details    Json?
+  timestamp  DateTime @default(now())
+}
+
+// API Management
+
+model APIUsageLog {
+  id             String    @id @default(uuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  apiKeyId       String?
+  apiKey         APIKey?   @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+  endpoint       String
+  method         String
+  statusCode     Int
+  durationMs     Int
+  ipAddress      String?
+  timestamp      DateTime  @default(now())
+
+  @@index([tenantId, endpoint, timestamp])
+}

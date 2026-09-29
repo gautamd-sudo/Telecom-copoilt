@@ -1,0 +1,35 @@
+[
+  {
+    "source": "NOKIA_NMS_01",
+    "sourceEventId": "evt_nokia_991823",
+    "eventTime": "2026-09-23T10:00:00Z",
+    "eventType": "NetworkKPI",
+    "payload": {
+      "cellId": "CELL_NY_101",
+      "throughputGbps": 1.2,
+      "latencyMs": 12.5,
+      "packetLossRatio": 0.001
+    }
+  },
+  {
+    "source": "ERICSSON_OSS_02",
+    "sourceEventId": "evt_eri_alarm_001",
+    "eventTime": "2026-09-23T10:05:00Z",
+    "eventType": "Alarm",
+    "payload": {
+      "sourceId": "EQUIP_TX_202",
+      "sourceType": "Router",
+      "name": "BGP Session Down",
+      "severity": "CRITICAL",
+      "status": "ACTIVE"
+    }
+  },
+  {
+    "source": "UNKNOWN_SOURCE",
+    "eventTime": "invalid-date",
+    "eventType": "NetworkKPI",
+    "payload": {
+      "throughputGbps": -5
+    }
+  }
+]

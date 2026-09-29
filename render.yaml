@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: telecom-copilot-backend
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    healthCheckPath: /health/live
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_DV69SQMHjGnE@ep-divine-lake-b50fpxz6-pooler.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      - key: JWT_SECRET
+        value: telecom-ai-platform-jwt-secret-key-production-2026-minimum-32-chars
+      - key: ALLOWED_ORIGINS
+        value: "*"
+
+  - type: web
+    name: telecom-copilot-frontend
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production

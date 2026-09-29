@@ -1,0 +1,73 @@
+openapi: 3.0.0
+info:
+  title: Telecom AI Command Center API
+  description: External REST API for network topology, intelligence, and incident management.
+  version: 1.0.0
+servers:
+  - url: https://api.telecom-ai.example.com/api/v1
+    description: Production Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API_KEY
+
+security:
+  - bearerAuth: []
+
+paths:
+  /network:
+    get:
+      summary: List Networks
+      description: Returns a paginated list of networks belonging to the authenticated tenant.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: A JSON array of networks
+        '401':
+          description: Unauthorized
+
+  /sites:
+    get:
+      summary: List Sites
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: List of physical sites
+
+  /cells:
+    get:
+      summary: List Cells
+      responses:
+        '200':
+          description: List of cell sectors
+  
+  /incidents:
+    get:
+      summary: List Incidents
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [OPEN, INVESTIGATING, RESOLVED]
+      responses:
+        '200':
+          description: List of network incidents

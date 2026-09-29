@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+pydantic
+pyjwt
+python-dotenv
+slowapi
+loguru
+asgi-correlation-id
+prometheus-fastapi-instrumentator
+scikit-learn
+xgboost
+pandas
+numpy
+httpx
+openai
