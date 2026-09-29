@@ -116,11 +116,11 @@ function CopilotChatContent() {
 
       setMessages(prev => [...prev, assistantMsg]);
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to communicate with DeepSeek model';
+      const errorMsg = err instanceof Error ? err.message : 'Failed to communicate with AI Copilot';
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `Error: ${errorMsg}. Please ensure NVIDIA_API_KEY is configured in .env.`,
+        content: `Error: ${errorMsg}. If the issue persists, please verify your network connection and NVIDIA_API_KEY configuration.`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }]);
     } finally {

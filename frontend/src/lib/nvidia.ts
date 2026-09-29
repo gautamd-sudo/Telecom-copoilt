@@ -1,11 +1,13 @@
 import OpenAI from 'openai';
 
-export const nvidiaClient = new OpenAI({
-  apiKey: process.env.NVIDIA_API_KEY || '',
-  baseURL: process.env.NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1',
-});
-
+export const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || '';
+export const NVIDIA_BASE_URL = process.env.NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1';
 export const NVIDIA_MODEL = process.env.NVIDIA_MODEL || 'deepseek-ai/deepseek-v4.1-flash';
+
+export const nvidiaClient = new OpenAI({
+  apiKey: NVIDIA_API_KEY,
+  baseURL: NVIDIA_BASE_URL,
+});
 
 export async function askDeepSeek(
   prompt: string,
