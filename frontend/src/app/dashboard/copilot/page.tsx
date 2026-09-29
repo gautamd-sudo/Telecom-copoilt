@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Send, Bot, User, Sparkles, AlertTriangle, Terminal, Database, Image as ImageIcon, X } from 'lucide-react';
+import { FormattedResponse } from '@/components/FormattedResponse';
 
 interface Citation {
   source: string;
@@ -224,7 +225,11 @@ function CopilotChatContent() {
                 </div>
               )}
 
-              <div className="whitespace-pre-wrap">{msg.content}</div>
+              {msg.role === 'assistant' ? (
+                <FormattedResponse content={msg.content} />
+              ) : (
+                <div className="whitespace-pre-wrap">{msg.content}</div>
+              )}
 
               {/* Citations / Tool Evidence */}
               {msg.citations && msg.citations.length > 0 && (
