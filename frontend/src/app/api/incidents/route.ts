@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import { getBackendUrl } from '@/lib/api-config';
 
 export async function GET(request: NextRequest) {
   try {
+    const backendUrl = getBackendUrl();
     const incomingAuth = request.headers.get('authorization');
     const authHeader = (incomingAuth && incomingAuth !== 'Bearer ') 
       ? incomingAuth 
       : 'Bearer telecom_live_api_key_2026';
 
-    const res = await fetch(`${BACKEND_URL}/api/v1/incidents`, {
+    const res = await fetch(`${backendUrl}/api/v1/incidents`, {
       cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const backendUrl = getBackendUrl();
     const incomingAuth = request.headers.get('authorization');
     const authHeader = (incomingAuth && incomingAuth !== 'Bearer ') 
       ? incomingAuth 
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    const res = await fetch(`${BACKEND_URL}/api/v1/incidents`, {
+    const res = await fetch(`${backendUrl}/api/v1/incidents`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

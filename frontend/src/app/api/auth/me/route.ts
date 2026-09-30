@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import { getBackendUrl } from '@/lib/api-config';
 
 export async function GET(request: NextRequest) {
   try {
+    const backendUrl = getBackendUrl();
     let authHeader = request.headers.get('authorization');
     if (!authHeader) {
       const cookieToken = request.cookies.get('telecom_auth_token')?.value;
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const res = await fetch(`${BACKEND_URL}/api/v1/auth/me`, {
+    const res = await fetch(`${backendUrl}/api/v1/auth/me`, {
       headers: {
         'Authorization': authHeader,
       },

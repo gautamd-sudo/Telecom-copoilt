@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+import { getBackendUrl } from '@/lib/api-config';
 
 export async function POST(request: NextRequest) {
   try {
+    const backendUrl = getBackendUrl();
     const body = await request.json();
-    const res = await fetch(`${BACKEND_URL}/api/v1/auth/login`, {
+    const res = await fetch(`${backendUrl}/api/v1/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
