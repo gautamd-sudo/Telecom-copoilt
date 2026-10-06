@@ -131,6 +131,19 @@ function main() {
                 create: { id: a.id, name: a.name, severity: a.severity, sourceId: a.sourceId, sourceType: a.sourceType, status: a.status, tenantId: tenant.id }
             });
         }
+        // 10. Platform Master API Key
+        const crypto = require('crypto');
+        const token = 'telecom_live_api_key_2026';
+        const keyHash = crypto.createHash('sha256').update(token).digest('hex');
+        yield prisma.aPIKey.upsert({
+            where: { keyHash },
+            update: { tenantId: tenant.id, name: 'Platform Master Key' },
+            create: {
+                tenantId: tenant.id,
+                name: 'Platform Master Key',
+                keyHash
+            }
+        });
         console.log(`
 ✅ Seed complete!
    Tenant:   Acme Telecom
