@@ -52,6 +52,14 @@ app.use((req, res, next) => {
 });
 
 // Health Checks
+app.get('/health', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.status(200).json({ status: 'UP', database: 'CONNECTED', timestamp: new Date().toISOString() });
+  } catch (e) {
+    res.status(200).json({ status: 'UP', database: 'CONNECTING', timestamp: new Date().toISOString() });
+  }
+});
 app.get('/health/live', (req, res) => res.status(200).json({ status: 'UP' }));
 app.get('/health/ready', async (req, res) => {
   try {
@@ -61,6 +69,18 @@ app.get('/health/ready', async (req, res) => {
     res.status(503).json({ status: 'NOT_READY' });
   }
 });
+app.get('/api/health', (req, res) => res.status(200).json({ status: 'UP' }));
+app.get('/', (req, res) => res.status(200).json({
+  service: 'telecom-copilot-backend',
+  status: 'UP',
+  endpoints: {
+    health: '/health',
+    healthLive: '/health/live',
+    healthReady: '/health/ready',
+    metrics: '/metrics',
+    docs: '/docs'
+  }
+}));
 app.get('/metrics', metricsEndpoint);
 
 // Global Rate Limiter

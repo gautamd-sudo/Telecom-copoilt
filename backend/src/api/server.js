@@ -86,6 +86,15 @@ app.use((req, res, next) => {
     next();
 });
 // Health Checks
+app.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield prisma.$queryRaw `SELECT 1`;
+        res.status(200).json({ status: 'UP', database: 'CONNECTED', timestamp: new Date().toISOString() });
+    }
+    catch (e) {
+        res.status(200).json({ status: 'UP', database: 'CONNECTING', timestamp: new Date().toISOString() });
+    }
+}));
 app.get('/health/live', (req, res) => res.status(200).json({ status: 'UP' }));
 app.get('/health/ready', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -94,6 +103,18 @@ app.get('/health/ready', (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
     catch (e) {
         res.status(503).json({ status: 'NOT_READY' });
+    }
+}));
+app.get('/api/health', (req, res) => res.status(200).json({ status: 'UP' }));
+app.get('/', (req, res) => res.status(200).json({
+    service: 'telecom-copilot-backend',
+    status: 'UP',
+    endpoints: {
+        health: '/health',
+        healthLive: '/health/live',
+        healthReady: '/health/ready',
+        metrics: '/metrics',
+        docs: '/docs'
     }
 }));
 app.get('/metrics', observability_1.metricsEndpoint);

@@ -190,6 +190,7 @@ Or using Docker Compose:
 ## 📚 Documentation Reference
 
 For comprehensive deep-dive guides, refer to:
+- **[Enterprise Solution Architecture & Integration Specification](docs/TELECOM_SYSTEM_ARCHITECTURE_SPECIFICATION.md)**: End-to-end architecture, OSS/BSS integration (TM Forum), 4G/5G/SD-WAN/Fiber/Sat, AI NOC workflows, security, and brownfield adaptation.
 - **[Feature & Working Guide](docs/FEATURE_AND_WORKING_GUIDE.md)**: Exhaustive manual for all 15 platform modules.
 - **[Architecture & Data Flow](docs/architecture.md)**: Low-level network topology and protocol specifications.
 - **[Operations Runbook](docs/operations-runbook.md)**: NOC deployment, backup, and failover instructions.

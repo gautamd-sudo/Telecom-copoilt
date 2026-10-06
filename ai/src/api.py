@@ -132,6 +132,10 @@ def analyze_root_cause(request: Request, payload: RCAPayload, token: dict = Depe
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+@app.get("/health")
+def health_check():
+    return {"status": "UP", "service": "telecom-ai-engine"}
+
 @app.get("/health/live")
 def live_check():
     return {"status": "UP"}
@@ -140,6 +144,10 @@ def live_check():
 @limiter.limit("100/minute")
 def ready_check(request: Request):
     return {"status": "READY", "models_loaded": len(engine.models)}
+
+@app.get("/")
+def root_check():
+    return {"status": "UP", "service": "telecom-ai-engine", "endpoints": {"health": "/health", "live": "/health/live", "ready": "/health/ready", "docs": "/docs"}}
 
 class SentimentPayload(BaseModel):
     text: constr(min_length=1, max_length=2000)
