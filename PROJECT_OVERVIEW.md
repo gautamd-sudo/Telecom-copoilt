@@ -203,12 +203,13 @@ npx next start -p 3002
 
 ---
 
-## 8. Live Production Deployment on Render
+## 8. Live Production Deployment on Vercel & Render
 
 | Service | Environment / URL | Status | Health Checks |
 | :--- | :--- | :--- | :--- |
-| **Frontend Web App** | [https://telecom-copilot-frontend.onrender.com](https://telecom-copilot-frontend.onrender.com) | **Live** | HTTP 200 (`/login`) |
-| **Backend REST API** | [https://telecom-copilot-backend.onrender.com](https://telecom-copilot-backend.onrender.com) | **Live** | [`/health/live`](https://telecom-copilot-backend.onrender.com/health/live) → `{"status":"UP"}`<br>[`/health/ready`](https://telecom-copilot-backend.onrender.com/health/ready) → `{"status":"READY"}` |
+| **Frontend Web App (Vercel)** | [https://telecom-copilot-frontend.vercel.app](https://telecom-copilot-frontend.vercel.app) | **Live** | HTTP 200 (`/login`) |
+| **Frontend Web App (Render)** | [https://telecom-copilot-frontend.onrender.com](https://telecom-copilot-frontend.onrender.com) | **Live** | HTTP 200 (`/login`) |
+| **Backend REST API (Render)** | [https://telecom-copilot-backend.onrender.com](https://telecom-copilot-backend.onrender.com) | **Live** | [`/health`](https://telecom-copilot-backend.onrender.com/health) → `{"status":"UP"}`<br>[`/health/ready`](https://telecom-copilot-backend.onrender.com/health/ready) → `{"status":"READY"}` |
 | **GitHub Repository** | [https://github.com/gautamd-sudo/Telecom-copoilt](https://github.com/gautamd-sudo/Telecom-copoilt) | **Synced** | Branch: `main` |
 
 ### Default Credentials (Pre-seeded in Neon DB)
