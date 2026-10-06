@@ -10,11 +10,10 @@ export function getBackendUrl(): string {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  // In production (Render, Vercel, etc.), if NEXT_PUBLIC_API_URL is missing
-  // or erroneously set to localhost, fallback to the live Render backend.
+  // In production (Vercel, Render, etc.), fallback to the live Vercel backend.
   if (process.env.NODE_ENV === 'production') {
     if (!apiUrl || apiUrl.includes('localhost') || apiUrl.includes('127.0.0.1')) {
-      return 'https://telecom-copilot-backend.onrender.com';
+      return 'https://telecom-copilot-backend.vercel.app';
     }
   }
 

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "prisma generate && tsc",
+    "vercel-build": "prisma generate",
     "start": "ts-node src/api/start.ts",
     "dev": "ts-node src/api/start.ts",
     "test": "jest"

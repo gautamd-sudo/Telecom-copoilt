@@ -42,6 +42,7 @@ const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const client_1 = require("@prisma/client");
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const crypto = __importStar(require("crypto"));
+const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const observability_1 = require("./observability");
 const app = (0, express_1.default)();
@@ -498,11 +499,20 @@ app.use('/api/auth', authRouter);
 app.use('/api/v1', v1Router);
 // Swagger Documentation
 const yamljs_1 = __importDefault(require("yamljs"));
-const swaggerDocument = yamljs_1.default.load(path.join(__dirname, 'openapi.yaml'));
-app.use('/docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocument));
+try {
+    const swaggerPath = path.join(__dirname, 'openapi.yaml');
+    if (fs.existsSync(swaggerPath)) {
+        const swaggerDocument = yamljs_1.default.load(swaggerPath);
+        app.use('/docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocument));
+    }
+}
+catch (e) {
+    // Graceful fallback for serverless
+}
 // Catch-all Error Handler
 app.use((err, req, res, next) => {
     const { logger } = require('./observability');
     logger.error({ err: err.message, stack: err.stack }, 'Unhandled API Error');
     res.status(500).json({ error: 'Internal Server Error' });
 });
+exports.default = app;

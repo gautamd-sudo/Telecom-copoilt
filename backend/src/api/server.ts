@@ -512,8 +512,15 @@ app.use('/api/v1', v1Router);
 
 // Swagger Documentation
 import YAML from 'yamljs';
-const swaggerDocument = YAML.load(path.join(__dirname, 'openapi.yaml'));
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+try {
+  const swaggerPath = path.join(__dirname, 'openapi.yaml');
+  if (fs.existsSync(swaggerPath)) {
+    const swaggerDocument = YAML.load(swaggerPath);
+    app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  }
+} catch (e) {
+  // Graceful fallback for serverless
+}
 
 // Catch-all Error Handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
@@ -523,3 +530,4 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 export { app };
+export default app;

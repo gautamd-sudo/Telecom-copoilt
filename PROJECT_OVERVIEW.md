@@ -209,6 +209,7 @@ npx next start -p 3002
 | :--- | :--- | :--- | :--- |
 | **Frontend Web App (Vercel)** | [https://telecom-copilot-frontend.vercel.app](https://telecom-copilot-frontend.vercel.app) | **Live** | HTTP 200 (`/login`) |
 | **Frontend Web App (Render)** | [https://telecom-copilot-frontend.onrender.com](https://telecom-copilot-frontend.onrender.com) | **Live** | HTTP 200 (`/login`) |
+| **Backend REST API (Vercel)** | [https://telecom-copilot-backend.vercel.app](https://telecom-copilot-backend.vercel.app) | **Live** | [`/health`](https://telecom-copilot-backend.vercel.app/health) → `{"status":"UP"}`<br>[`/health/ready`](https://telecom-copilot-backend.vercel.app/health/ready) → `{"status":"READY"}` |
 | **Backend REST API (Render)** | [https://telecom-copilot-backend.onrender.com](https://telecom-copilot-backend.onrender.com) | **Live** | [`/health`](https://telecom-copilot-backend.onrender.com/health) → `{"status":"UP"}`<br>[`/health/ready`](https://telecom-copilot-backend.onrender.com/health/ready) → `{"status":"READY"}` |
 | **GitHub Repository** | [https://github.com/gautamd-sudo/Telecom-copoilt](https://github.com/gautamd-sudo/Telecom-copoilt) | **Synced** | Branch: `main` |
 
